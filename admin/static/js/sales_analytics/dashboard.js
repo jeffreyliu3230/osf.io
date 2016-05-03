@@ -197,85 +197,124 @@ var SalesAnalytics = function() {
         });
     };
     self.getUserCount = function(userCount) {
-        var chart = new keen.Dataviz()
-          .el(document.getElementById('db-chart-user-count'))
-          .parseRawData({result: userCount.items})
+        var chart = c3.generate({
+            bindto: '#db-chart-user-count',
+            color: {
+                pattern: [
+                    //rausch    hackb      kazan      babu      lima        beach     barol
+                    '#ff5a5f', '#7b0051', '#007A87', '#00d1c1', '#8ce071', '#ffb400', '#b4a76c',
+                    '#ff8083', '#cc0086', '#00a1b3', '#00ffeb', '#bbedab', '#ffd266', '#cbc29a',
+                    '#ff3339', '#ff1ab1', '#005c66', '#00b3a5', '#55d12e', '#b37e00', '#988b4e'
+                  ]},
+            data: {
+                columns: [['Count'].concat(userCount.count)],
+                type: 'bar',
+                order: 'desc'
+            },
+            axis: {
+                x: {
+                    type: 'category',
+                    categories: userCount.tags,
+                },
+                rotated: true
+            },
+            bar: {
+                width: {
+                    ratio: 0.5 // this makes bar width 50% of length between ticks
+                }
+                // or
+                //width: 100 // this makes bar width 100px
+            }
+        });
     };
 
     self.getUserPercentage = function(userCount) {
-
+        var chart = c3.generate({
+            bindto: '#db-chart-user-percent',
+            data: {
+                columns: [['Percentage'].concat(userCount.count)],
+                type: 'bar',
+                order: 'desc'
+            },
+            axis: {
+                x: {
+                    type: 'category',
+                    categories: userCount.tags,
+                },
+                rotated: true
+            },
+            bar: {
+                width: {
+                    ratio: 0.5 // this makes bar width 50% of length between ticks
+                }
+                // or
+                //width: 100 // this makes bar width 100px
+            }
+        });
     };
 
     self.getMultiProductCountYearly = function(multiProductMetricsYearly) {
-        var chart = new keen.Dataviz()
-          .el(document.getElementById('db-chart-multi-product-yearly'))
-          .parseRawData({ result: multiProductMetricsYearly['multi_product_count'] })
-          .chartType("metric")
-          .colors(["#e57fc2"])
-          .title("Users")
-          .render();
+        var chart = self.drawMetric('db-chart-multi-product-yearly',
+                                    multiProductMetricsYearly.multi_product_count,
+                                    '#e57fc2',
+                                    'Users');
       };
 
     self.getMultiProductCountMonthly = function(multiProductMetricsMonthly) {
-        var chart = new keen.Dataviz()
-          .el(document.getElementById('db-chart-multi-product-monthly'))
-          .parseRawData({ result: multiProductMetricsMonthly['multi_product_count'] })
-          .chartType("metric")
-          .colors(["#e57fc2"])
-          .title("Users")
-          .render();
+        var chart = self.drawMetric('db-chart-multi-product-monthly',
+                                    multiProductMetricsMonthly.multi_product_count,
+                                    '#e57fc2',
+                                    'Users');
       };
 
     self.getCrossProductCountYearly = function(multiProductMetricsYearly) {
-        var chart = new keen.Dataviz()
-          .el(document.getElementById('db-chart-cross-product-yearly'))
-          .parseRawData({ result: multiProductMetricsYearly['cross_product_count'] })
-          .chartType("metric")
-          .colors(["#aee99b"])
-          .title("Users")
-          .render();
+        var chart = self.drawMetric('db-chart-cross-product-yearly',
+                                    multiProductMetricsYearly.cross_product_count,
+                                    '#aee99b',
+                                    'Users');
       };
 
     self.getCrossProductCountMonthly = function(multiProductMetricsMonthly) {
-        var chart = new keen.Dataviz()
-          .el(document.getElementById('db-chart-cross-product-monthly'))
-          .parseRawData({ result: multiProductMetricsMonthly['cross_product_count'] })
-          .chartType("metric")
-          .colors(["#aee99b"])
-          .title("Users")
-          .render();
-      };
+        var chart = self.drawMetric('db-chart-cross-product-monthly',
+                                    multiProductMetricsMonthly.cross_product_count,
+                                    '#aee99b',
+                                    'Users');
+    };
 
     self.getMultiActionCountYearly = function(multiProductMetricsYearly) {
-        var chart = new keen.Dataviz()
-          .el(document.getElementById('db-chart-multi-action-yearly'))
-          .parseRawData({ result: multiProductMetricsYearly['multi_action_count'] })
-          .chartType("metric")
-          .colors(["#00d1c1"])
-          .title("Users")
-          .render();
-      };
+        var chart = self.drawMetric('db-chart-multi-action-yearly',
+                                    multiProductMetricsYearly.multi_action_count,
+                                    '#00d1c1',
+                                    'Users');
+    };
 
     self.getMultiActionCountMonthly = function(multiProductMetricsMonthly) {
-        var chart = new keen.Dataviz()
-          .el(document.getElementById('db-chart-multi-action-monthly'))
-          .parseRawData({ result: multiProductMetricsMonthly['multi_action_count'] })
-          .chartType("metric")
-          .colors(["#00d1c1"])
-          .title("Users")
-          .render();
-      };
+        var chart = self.drawMetric('db-chart-multi-action-monthly',
+                                    multiProductMetricsMonthly.multi_action_count,
+                                    '#00d1c1',
+                                    'Users');
+    };
 
     self.prepareChart = function(elementId) {
         var chart = new keen.Dataviz();
         return chart.el(document.getElementById(elementId)).prepare();
     };
 
-    self.drawChart = function(chart, type, title, result) {
+    self.drawChart = function(chart, type, title, result, color) {
         chart.attributes({title: title, width: '100%'});
         chart.adapter({chartType: type});
         chart.parseRawData({result: result});
         chart.render();
+    };
+
+    self.drawMetric = function(elementId, result, color, title) {
+        var chart = new keen.Dataviz()
+          .el(document.getElementById(elementId))
+          .parseRawData({ result: result })
+          .chartType('metric')
+          .colors([color])
+          .title(title)
+          .render();
     };
 
     self.init = function() {
