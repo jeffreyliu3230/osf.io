@@ -70,7 +70,7 @@ def get_multi_product_metrics(db=db, timedelta=timedelta(days=365)):
             }
 
 
-def get_repeat_action_count(db=db, timedelta=timedelta(days=30)):
+def get_repeat_action_user_count(db=db, timedelta=timedelta(days=30)):
     """
     Get the number of users that have repetitive actions (with a 3 second difference)
     during the last month.
@@ -109,4 +109,4 @@ def get_repeat_action_count(db=db, timedelta=timedelta(days=30)):
 user_count = get_user_count(db, ENTRY_POINTS)
 multi_product_metrics_yearly = get_multi_product_metrics()
 multi_product_metrics_monthly = get_multi_product_metrics(timedelta=timedelta(days=30))
-repeat_action_count_monthly = get_repeat_action_count()
+repeat_action_user_monthly = get_repeat_action_user_count()

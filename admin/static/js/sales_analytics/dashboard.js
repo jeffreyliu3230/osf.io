@@ -232,7 +232,7 @@ var SalesAnalytics = function() {
         var chart = c3.generate({
             bindto: '#db-chart-user-percent',
             data: {
-                columns: [['Percentage'].concat(userCount.count)],
+                columns: [['Percentage'].concat(userCount.percent)],
                 type: 'bar',
                 order: 'desc'
             },
